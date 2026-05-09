@@ -48,8 +48,8 @@ input {
   justify-content: flex-start;
   border: 1px solid rgba(124, 210, 137, 0.18);
   background:
-    linear-gradient(180deg, rgba(7, 19, 9, 0.82), rgba(4, 11, 6, 0.92)),
-    rgba(4, 11, 6, 0.9);
+    linear-gradient(180deg, rgba(7, 19, 9, 0.41), rgba(4, 11, 6, 0.46)),
+    rgba(4, 11, 6, 0.45);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
   backdrop-filter: blur(16px);
 }
@@ -106,7 +106,7 @@ h1 {
   padding: 10px 12px;
   border: 1px solid rgba(61, 186, 96, 0.24);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.045);
+  background: rgba(255, 255, 255, 0.023);
 }
 
 .amount-input-row svg {
@@ -144,7 +144,7 @@ h1 {
   padding: 11px;
   border: 1px solid rgba(124, 210, 137, 0.12);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.045);
+  background: rgba(255, 255, 255, 0.023);
 }
 
 .stats-grid svg {
@@ -219,9 +219,10 @@ h1 {
 @media (max-width: 860px) {
   .campaign-details {
     left: 12px;
-    right: 12px;
     bottom: 12px;
-    width: auto;
+    width: min(780px, calc((100vw - 24px) * 2));
+    transform: scale(0.5);
+    transform-origin: bottom left;
   }
 
   .stats-grid {

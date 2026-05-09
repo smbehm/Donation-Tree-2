@@ -30,13 +30,25 @@ export function App() {
   return (
     <main className="page">
       <section className="donation-panel" aria-labelledby="campaign-title">
+        <div className="visual-panel">
+          <DonationTree3D
+            amount={amount}
+            target={CAMPAIGN_TARGET}
+            campaignName={CAMPAIGN_NAME}
+          />
+          <div className="progress-track" aria-hidden="true">
+            <span
+              style={{
+                height: `${progress * 100}%`,
+                '--progress-width': `${progress * 100}%`
+              }}
+            />
+          </div>
+        </div>
+
         <div className="campaign-details">
           <p className="eyebrow">Live donation preview</p>
           <h1 id="campaign-title">{CAMPAIGN_NAME}</h1>
-          <p className="campaign-copy">
-            Enter a possible gift amount and watch the tree fill from its roots toward the canopy.
-            At {currency(100)}, the vines show exactly 10% of the {currency(CAMPAIGN_TARGET)} goal.
-          </p>
 
           <div className="amount-card">
             <label htmlFor="donation-amount">Donation amount</label>
@@ -81,17 +93,6 @@ export function App() {
               <span>Remaining</span>
               <strong>{currency(remaining)}</strong>
             </div>
-          </div>
-        </div>
-
-        <div className="visual-panel">
-          <DonationTree3D
-            amount={amount}
-            target={CAMPAIGN_TARGET}
-            campaignName={CAMPAIGN_NAME}
-          />
-          <div className="progress-track" aria-hidden="true">
-            <span style={{ height: `${progress * 100}%` }} />
           </div>
         </div>
       </section>

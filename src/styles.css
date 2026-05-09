@@ -1,6 +1,6 @@
 :root {
-  color: #172019;
-  background: #eef5ef;
+  color: #dceadc;
+  background: #040b06;
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
@@ -13,6 +13,7 @@
 body {
   margin: 0;
   min-width: 320px;
+  overflow: hidden;
 }
 
 button,
@@ -21,56 +22,57 @@ input {
 }
 
 .page {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 28px;
-  background:
-    linear-gradient(120deg, rgba(255, 255, 255, 0.7), rgba(209, 230, 216, 0.74)),
-    #eef5ef;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100svh;
+  overflow: hidden;
+  background: #040b06;
 }
 
 .donation-panel {
-  width: min(1160px, 100%);
-  display: grid;
-  grid-template-columns: minmax(300px, 0.86fr) minmax(360px, 1.14fr);
-  align-items: stretch;
-  gap: 24px;
-}
-
-.campaign-details,
-.visual-panel {
-  border: 1px solid rgba(31, 54, 38, 0.12);
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 24px 70px rgba(35, 54, 40, 0.12);
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .campaign-details {
+  position: absolute;
+  left: clamp(14px, 3vw, 36px);
+  bottom: clamp(14px, 3vw, 36px);
+  z-index: 3;
+  width: min(390px, calc(100vw - 28px));
   border-radius: 8px;
-  padding: clamp(24px, 4vw, 44px);
+  padding: clamp(16px, 2.3vw, 24px);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
+  border: 1px solid rgba(124, 210, 137, 0.18);
+  background:
+    linear-gradient(180deg, rgba(7, 19, 9, 0.82), rgba(4, 11, 6, 0.92)),
+    rgba(4, 11, 6, 0.9);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(16px);
 }
 
 .eyebrow {
-  margin: 0 0 12px;
-  color: #2d7c4a;
-  font-size: 0.78rem;
-  font-weight: 800;
+  margin: 0 0 8px;
+  color: #3dba60;
+  font-size: 0.68rem;
+  font-weight: 700;
   letter-spacing: 0;
   text-transform: uppercase;
 }
 
 h1 {
   margin: 0;
-  color: #101711;
-  font-size: clamp(2rem, 5vw, 4.5rem);
-  line-height: 0.95;
+  color: #edf8ed;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  line-height: 1;
   letter-spacing: 0;
 }
 
 .campaign-copy {
+  display: none;
   max-width: 54ch;
   margin: 22px 0 30px;
   color: #4e5d52;
@@ -80,17 +82,19 @@ h1 {
 
 .amount-card {
   display: grid;
-  gap: 14px;
-  padding: 18px;
-  border: 1px solid rgba(22, 45, 29, 0.14);
+  gap: 12px;
+  margin-top: 18px;
+  padding: 0;
+  border: 0;
   border-radius: 8px;
-  background: #fbfdfb;
+  background: transparent;
 }
 
 .amount-card label {
-  color: #24362a;
-  font-size: 0.88rem;
+  color: #8aaa90;
+  font-size: 0.76rem;
   font-weight: 750;
+  text-transform: uppercase;
 }
 
 .amount-input-row {
@@ -98,10 +102,15 @@ h1 {
   grid-template-columns: 24px 1fr;
   align-items: center;
   gap: 10px;
+  min-height: 62px;
+  padding: 10px 12px;
+  border: 1px solid rgba(61, 186, 96, 0.24);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.045);
 }
 
 .amount-input-row svg {
-  color: #28834c;
+  color: #3dba60;
   width: 24px;
   height: 24px;
 }
@@ -111,39 +120,39 @@ h1 {
   min-width: 0;
   border: 0;
   outline: 0;
-  color: #111812;
+  color: #f1fff1;
   background: transparent;
-  font-size: clamp(2rem, 6vw, 3.85rem);
+  font-size: clamp(2rem, 8vw, 3.3rem);
   font-weight: 850;
   line-height: 1;
 }
 
 .range {
   width: 100%;
-  accent-color: #2fb05f;
+  accent-color: #3dba60;
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 18px;
+  gap: 8px;
+  margin-top: 14px;
 }
 
 .stats-grid div {
   min-width: 0;
-  padding: 14px;
-  border: 1px solid rgba(22, 45, 29, 0.1);
+  padding: 11px;
+  border: 1px solid rgba(124, 210, 137, 0.12);
   border-radius: 8px;
-  background: rgba(245, 249, 245, 0.78);
+  background: rgba(255, 255, 255, 0.045);
 }
 
 .stats-grid svg {
   display: block;
   width: 20px;
   height: 20px;
-  margin-bottom: 10px;
-  color: #2c8551;
+  margin-bottom: 8px;
+  color: #3dba60;
 }
 
 .stats-grid span,
@@ -152,29 +161,31 @@ h1 {
 }
 
 .stats-grid span {
-  color: #69786d;
-  font-size: 0.78rem;
+  color: #75927c;
+  font-size: 0.68rem;
+  text-transform: uppercase;
 }
 
 .stats-grid strong {
   overflow-wrap: anywhere;
   margin-top: 4px;
-  color: #172019;
-  font-size: clamp(1rem, 2vw, 1.18rem);
+  color: #dceadc;
+  font-size: clamp(0.92rem, 2vw, 1.05rem);
 }
 
 .visual-panel {
-  position: relative;
-  min-height: 620px;
+  position: absolute;
+  inset: 0;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 0;
 }
 
 .tree-shell,
 .tree-canvas {
   width: 100%;
   height: 100%;
-  min-height: 620px;
+  min-height: 100vh;
+  min-height: 100svh;
 }
 
 .tree-canvas canvas {
@@ -185,13 +196,14 @@ h1 {
 
 .progress-track {
   position: absolute;
-  right: 22px;
-  top: 22px;
-  bottom: 22px;
-  width: 12px;
+  right: clamp(14px, 3vw, 28px);
+  top: clamp(14px, 3vw, 28px);
+  bottom: clamp(14px, 3vw, 28px);
+  width: 10px;
   border-radius: 999px;
-  background: rgba(15, 22, 17, 0.12);
+  background: rgba(255, 255, 255, 0.08);
   overflow: hidden;
+  z-index: 2;
 }
 
 .progress-track span {
@@ -205,24 +217,35 @@ h1 {
 }
 
 @media (max-width: 860px) {
-  .page {
-    padding: 14px;
-  }
-
-  .donation-panel {
-    grid-template-columns: 1fr;
-  }
-
-  .visual-panel {
-    min-height: 520px;
-  }
-
-  .tree-shell,
-  .tree-canvas {
-    min-height: 520px;
+  .campaign-details {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
   }
 
   .stats-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .stats-grid div {
+    padding: 9px;
+  }
+
+  .progress-track {
+    right: 12px;
+    top: 12px;
+    bottom: auto;
+    width: 120px;
+    height: 8px;
+  }
+
+  .progress-track span {
+    top: 0;
+    right: auto;
+    bottom: 0;
+    width: var(--progress-width, 0%);
+    height: 100% !important;
+    background: linear-gradient(90deg, #236d3f, #42cb73, #b5f1a4);
   }
 }

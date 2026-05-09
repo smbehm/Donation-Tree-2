@@ -1,161 +1,313 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+
+const VINE_MIN_Y = 0;
+const VINE_MAX_Y = 4.65;
+
+const VERT_SHADER = `
+  varying float vLocalY;
+
+  void main() {
+    vLocalY = position.y;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const FRAG_SHADER = `
+  varying float vLocalY;
+  uniform float uFillLevel;
+  uniform float uMinY;
+  uniform float uMaxY;
+
+  void main() {
+    float range = uMaxY - uMinY;
+    float fillNorm = clamp((uFillLevel - uMinY) / range, 0.0, 1.0);
+    float height = clamp((vLocalY - uMinY) / range, 0.0, 1.0);
+
+    vec3 emptyColor = vec3(0.055, 0.038, 0.022);
+    vec3 deepGreen = vec3(0.04, 0.30, 0.09);
+    vec3 emerald = vec3(0.12, 0.74, 0.28);
+    vec3 brightTip = vec3(0.55, 1.0, 0.35);
+
+    float localT = (fillNorm > 0.001) ? clamp(height / fillNorm, 0.0, 1.0) : 0.0;
+    vec3 filledColor = mix(deepGreen, mix(emerald, brightTip, localT * localT), localT);
+
+    float edgeDist = abs(vLocalY - uFillLevel);
+    float glow = exp(-edgeDist * edgeDist * 20.0);
+    filledColor += vec3(0.55, 1.0, 0.12) * glow * 2.4;
+
+    float blend = smoothstep(uFillLevel + 0.12, uFillLevel - 0.12, vLocalY);
+    gl_FragColor = vec4(mix(emptyColor, filledColor, blend), 1.0);
+  }
+`;
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
-export function DonationTree3D({ amount, target, campaignName }) {
-  const mountRef = React.useRef(null);
-  const progressRef = React.useRef(0);
+function roughenGeometry(geometry, amount, taper = 0.6) {
+  const position = geometry.attributes.position;
 
-  React.useEffect(() => {
-    progressRef.current = clamp(amount / target, 0, 1);
+  for (let index = 0; index < position.count; index += 1) {
+    const t = (position.getY(index) + 2.325) / 4.65;
+    const n = amount * (1 - t * taper);
+    position.setX(index, position.getX(index) + (Math.random() - 0.5) * n * 2);
+    position.setZ(index, position.getZ(index) + (Math.random() - 0.5) * n * 2);
+  }
+
+  geometry.computeVertexNormals();
+}
+
+export function DonationTree3D({ amount, target, campaignName }) {
+  const mountRef = useRef(null);
+  const vineUniformsRef = useRef(null);
+  const rafRef = useRef(0);
+
+  useEffect(() => {
+    if (!vineUniformsRef.current) return;
+    const progress = clamp(amount / target, 0, 1);
+    vineUniformsRef.current.uFillLevel.value = VINE_MIN_Y + progress * (VINE_MAX_Y - VINE_MIN_Y);
   }, [amount, target]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!mountRef.current) return undefined;
 
     const mount = mountRef.current;
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf8fbf7);
-    scene.fog = new THREE.Fog(0xf8fbf7, 8, 18);
-
-    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-    camera.position.set(0, 2.2, 8.2);
-    camera.lookAt(0, 1.95, 0);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     mount.appendChild(renderer.domElement);
 
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x040b06);
+    scene.fog = new THREE.FogExp2(0x040b06, 0.065);
+
+    const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 100);
+    camera.position.set(0, 2.8, 6.8);
+    camera.lookAt(0, 2.5, 0);
+
+    scene.add(new THREE.AmbientLight(0x0c1e0c, 0.9));
+
+    const sun = new THREE.DirectionalLight(0xffe8a0, 1.7);
+    sun.position.set(4, 8, 5);
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(1024, 1024);
+    scene.add(sun);
+
+    const fillLight = new THREE.PointLight(0x44ff88, 1, 24);
+    fillLight.position.set(-3, 4, 3);
+    scene.add(fillLight);
+
+    const rimLight = new THREE.PointLight(0x001a44, 0.45, 18);
+    rimLight.position.set(2, 2, -4);
+    scene.add(rimLight);
+
     const treeGroup = new THREE.Group();
     scene.add(treeGroup);
 
-    scene.add(new THREE.HemisphereLight(0xe8fff1, 0x2e261f, 2.1));
+    const barkMaterial = new THREE.MeshStandardMaterial({ color: 0x271203, roughness: 0.97 });
+    const randomBetween = (min, max) => min + Math.random() * (max - min);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 3.2);
-    keyLight.position.set(4, 7, 5);
-    keyLight.castShadow = true;
-    keyLight.shadow.mapSize.set(1024, 1024);
-    scene.add(keyLight);
+    const trunkGeometry = new THREE.CylinderGeometry(0.11, 0.24, 4.65, 14, 7);
+    roughenGeometry(trunkGeometry, 0.038);
+    const trunk = new THREE.Mesh(trunkGeometry, barkMaterial);
+    trunk.position.y = 2.325;
+    trunk.castShadow = true;
+    trunk.receiveShadow = true;
+    treeGroup.add(trunk);
 
-    const rimLight = new THREE.DirectionalLight(0xb8ffd7, 1.4);
-    rimLight.position.set(-5, 4, -4);
-    scene.add(rimLight);
+    const addBranch = (length, topRadius, bottomRadius, y, rotationZ, rotationY) => {
+      const branch = new THREE.Mesh(
+        new THREE.CylinderGeometry(topRadius, bottomRadius, length, 7),
+        barkMaterial
+      );
+      branch.position.set(Math.sin(rotationY) * 0.09, y, Math.cos(rotationY) * 0.09);
+      branch.rotation.z = rotationZ;
+      branch.rotation.y = rotationY;
+      branch.castShadow = true;
+      treeGroup.add(branch);
+    };
+
+    addBranch(1.1, 0.019, 0.052, 2.6, 0.45, 0.2);
+    addBranch(0.95, 0.017, 0.046, 2.9, -0.4, 2.4);
+    addBranch(0.85, 0.015, 0.04, 3.3, 0.37, 4.5);
+    addBranch(0.75, 0.013, 0.035, 3.6, -0.31, 1.2);
+    addBranch(0.62, 0.011, 0.029, 3.9, 0.27, 3.7);
+    addBranch(0.5, 0.009, 0.023, 4.2, -0.21, 5.5);
+
+    const leafColors = [0x0f2f0c, 0x133812, 0x0c270a, 0x183e11, 0x0a2008];
+    [
+      [0, 4.4, 0, 1],
+      [0.75, 4.1, 0.3, 0.74],
+      [-0.6, 4.2, -0.4, 0.7],
+      [0.4, 4.75, -0.5, 0.64],
+      [-0.5, 4.5, 0.5, 0.6],
+      [0, 5.1, 0, 0.54],
+      [0.3, 3.9, 0.65, 0.5],
+      [-0.3, 4, -0.62, 0.46]
+    ].forEach(([x, y, z, radius], index) => {
+      const geometry = new THREE.SphereGeometry(radius, 7, 5);
+      const position = geometry.attributes.position;
+
+      for (let vertex = 0; vertex < position.count; vertex += 1) {
+        position.setX(vertex, position.getX(vertex) + randomBetween(-0.13, 0.13));
+        position.setY(vertex, position.getY(vertex) + randomBetween(-0.13, 0.13));
+        position.setZ(vertex, position.getZ(vertex) + randomBetween(-0.13, 0.13));
+      }
+
+      geometry.computeVertexNormals();
+      const leaves = new THREE.Mesh(
+        geometry,
+        new THREE.MeshStandardMaterial({
+          color: leafColors[index % leafColors.length],
+          roughness: 1,
+          transparent: true,
+          opacity: 0.87
+        })
+      );
+      leaves.position.set(x, y, z);
+      treeGroup.add(leaves);
+    });
 
     const ground = new THREE.Mesh(
-      new THREE.CircleGeometry(3.9, 80),
-      new THREE.MeshStandardMaterial({ color: 0xe4efe2, roughness: 0.95 })
+      new THREE.CylinderGeometry(3, 3, 0.06, 32),
+      new THREE.MeshStandardMaterial({ color: 0x050d03, roughness: 1 })
     );
-    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -0.03;
     ground.receiveShadow = true;
     treeGroup.add(ground);
 
-    const glow = new THREE.Mesh(
-      new THREE.RingGeometry(0.75, 1.55, 96),
-      new THREE.MeshBasicMaterial({
-        color: 0x4fca75,
-        transparent: true,
-        opacity: 0,
-        side: THREE.DoubleSide
-      })
-    );
-    glow.rotation.x = -Math.PI / 2;
-    glow.position.y = 0.012;
-    treeGroup.add(glow);
+    for (let index = 0; index < 6; index += 1) {
+      const angle = (index / 6) * Math.PI * 2 + randomBetween(-0.25, 0.25);
+      const points = [];
 
-    const trunkHeight = 4.4;
-    const trunk = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.42, 0.66, trunkHeight, 22),
-      new THREE.MeshStandardMaterial({
-        color: 0x3b2a22,
-        roughness: 0.9,
-        metalness: 0.02
-      })
-    );
-    trunk.position.y = trunkHeight / 2;
-    trunk.castShadow = true;
-    treeGroup.add(trunk);
+      for (let point = 0; point <= 18; point += 1) {
+        const t = point / 18;
+        points.push(
+          new THREE.Vector3(
+            Math.cos(angle) * (0.21 + t * randomBetween(0.55, 0.9)),
+            Math.sin(t * Math.PI) * 0.13 * (1 - t * 0.55),
+            Math.sin(angle) * (0.21 + t * randomBetween(0.55, 0.9))
+          )
+        );
+      }
 
-    const rootMaterial = new THREE.MeshStandardMaterial({ color: 0x2b211c, roughness: 0.92 });
-    for (let i = 0; i < 7; i += 1) {
-      const angle = (i / 7) * Math.PI * 2;
-      const root = new THREE.Mesh(new THREE.CapsuleGeometry(0.08, 1.05, 5, 10), rootMaterial);
-      root.position.set(Math.cos(angle) * 0.62, 0.11, Math.sin(angle) * 0.62);
-      root.rotation.z = Math.PI / 2;
-      root.rotation.y = -angle;
+      const root = new THREE.Mesh(
+        new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), 18, 0.022, 5, false),
+        barkMaterial
+      );
       root.castShadow = true;
       treeGroup.add(root);
     }
 
-    const canopyMaterial = new THREE.MeshStandardMaterial({
-      color: 0x142317,
-      roughness: 0.82,
-      metalness: 0
+    const vineUniforms = {
+      uFillLevel: { value: VINE_MIN_Y + clamp(amount / target, 0, 1) * (VINE_MAX_Y - VINE_MIN_Y) },
+      uMinY: { value: VINE_MIN_Y },
+      uMaxY: { value: VINE_MAX_Y }
+    };
+    vineUniformsRef.current = vineUniforms;
+
+    const vineMaterial = new THREE.ShaderMaterial({
+      vertexShader: VERT_SHADER,
+      fragmentShader: FRAG_SHADER,
+      uniforms: vineUniforms
     });
-    const canopy = new THREE.Group();
+
     [
-      [-0.9, 4.9, 0, 1.05],
-      [0, 5.25, 0.15, 1.22],
-      [0.9, 4.9, -0.05, 1.05],
-      [-0.35, 4.55, 0.35, 0.92],
-      [0.45, 4.55, 0.35, 0.92]
-    ].forEach(([x, y, z, scale]) => {
-      const leaf = new THREE.Mesh(new THREE.IcosahedronGeometry(scale, 2), canopyMaterial);
-      leaf.position.set(x, y, z);
-      leaf.castShadow = true;
-      canopy.add(leaf);
-    });
-    treeGroup.add(canopy);
+      { start: 0, turns: 2.5, offset: 0.015 },
+      { start: Math.PI * 0.5, turns: 2.8, offset: 0.018 },
+      { start: Math.PI * 1.15, turns: 2.3, offset: 0.014 },
+      { start: Math.PI * 1.72, turns: 3, offset: 0.017 }
+    ].forEach(({ start, turns, offset }) => {
+      const points = [];
 
-    const blackVineMaterial = new THREE.MeshStandardMaterial({
-      color: 0x080808,
-      roughness: 0.58,
-      metalness: 0.04
-    });
-    const colorVineMaterial = new THREE.MeshStandardMaterial({
-      color: 0x27b763,
-      emissive: 0x0d391f,
-      emissiveIntensity: 0.35,
-      roughness: 0.46
-    });
-
-    const vineLayer = new THREE.Group();
-    const coloredVines = new THREE.Group();
-    treeGroup.add(vineLayer);
-    vineLayer.add(coloredVines);
-
-    function makeVinePoints(offset, radius, turns, height) {
-      return Array.from({ length: 180 }, (_, index) => {
-        const t = index / 179;
-        const angle = offset + t * turns * Math.PI * 2;
-        const taper = 1 - t * 0.28;
-        return new THREE.Vector3(
-          Math.cos(angle) * radius * taper,
-          0.17 + t * height,
-          Math.sin(angle) * radius * taper
+      for (let index = 0; index <= 110; index += 1) {
+        const t = index / 110;
+        const y = VINE_MIN_Y + t * (VINE_MAX_Y - VINE_MIN_Y);
+        const angle = start + t * turns * Math.PI * 2;
+        const trunkRadius = 0.24 - t * 0.13;
+        const radius = trunkRadius + offset;
+        const wave = Math.sin(t * 22) * 0.005;
+        points.push(
+          new THREE.Vector3(
+            Math.cos(angle) * (radius + wave),
+            y,
+            Math.sin(angle) * (radius + wave)
+          )
         );
-      });
+      }
+
+      const vine = new THREE.Mesh(
+        new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), 160, 0.0065, 5, false),
+        vineMaterial
+      );
+      treeGroup.add(vine);
+    });
+
+    const particleCount = 150;
+    const particleGeometry = new THREE.BufferGeometry();
+    const particlePositions = new Float32Array(particleCount * 3);
+    const particleSpeeds = new Float32Array(particleCount);
+    const particlePhases = new Float32Array(particleCount);
+
+    for (let index = 0; index < particleCount; index += 1) {
+      particlePositions[index * 3] = randomBetween(-6, 6);
+      particlePositions[index * 3 + 1] = randomBetween(0, 7);
+      particlePositions[index * 3 + 2] = randomBetween(-6, 6);
+      particleSpeeds[index] = randomBetween(0.3, 1);
+      particlePhases[index] = randomBetween(0, Math.PI * 2);
     }
 
-    const vinePointSets = [
-      makeVinePoints(0.2, 0.7, 2.42, 4.58),
-      makeVinePoints(2.45, 0.63, 2.15, 4.35),
-      makeVinePoints(4.2, 0.55, 1.78, 3.95)
-    ];
-
-    vinePointSets.forEach((points, index) => {
-      const curve = new THREE.CatmullRomCurve3(points);
-      const vine = new THREE.Mesh(
-        new THREE.TubeGeometry(curve, 150, index === 0 ? 0.052 : 0.043, 12, false),
-        blackVineMaterial
-      );
-      vine.castShadow = true;
-      vineLayer.add(vine);
+    particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+    const particleMaterial = new THREE.PointsMaterial({
+      color: 0x99ffaa,
+      size: 0.05,
+      transparent: true,
+      opacity: 0.65
     });
+    const particles = new THREE.Points(particleGeometry, particleMaterial);
+    scene.add(particles);
+
+    const resize = () => {
+      const width = Math.max(mount.clientWidth, 320);
+      const height = Math.max(mount.clientHeight, 420);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height, false);
+    };
+
+    resize();
+    const observer = new ResizeObserver(resize);
+    observer.observe(mount);
+
+    let tick = 0;
+    const animate = () => {
+      rafRef.current = requestAnimationFrame(animate);
+      tick += 0.007;
+
+      treeGroup.rotation.y = tick * 0.22;
+
+      const particlePosition = particleGeometry.attributes.position;
+      for (let index = 0; index < particleCount; index += 1) {
+        particlePosition.setY(
+          index,
+          particlePosition.getY(index) + Math.sin(tick * particleSpeeds[index] + particlePhases[index]) * 0.003
+        );
+        particlePosition.setX(
+          index,
+          particlePosition.getX(index) + Math.cos(tick * particleSpeeds[index] * 0.4 + particlePhases[index]) * 0.002
+        );
+        if (particlePosition.getY(index) > 7) particlePosition.setY(index, 0);
+      }
+      particlePosition.needsUpdate = true;
+
+      fillLight.intensity = 1 + Math.sin(tick * 1.4) * 0.13;
+      particleMaterial.opacity = 0.5 + Math.sin(tick * 1.8) * 0.18;
+
+      renderer.render(scene, camera);
+    };
+    animate();
 
     const disposeObject = (object) => {
       if (object.geometry) object.geometry.dispose();
@@ -168,83 +320,13 @@ export function DonationTree3D({ amount, target, campaignName }) {
       }
     };
 
-    const clearColoredVines = () => {
-      coloredVines.children.forEach(disposeObject);
-      coloredVines.clear();
-    };
-
-    const updateColoredVines = (progress) => {
-      const topY = 0.17 + progress * 4.58;
-      clearColoredVines();
-
-      vinePointSets.forEach((points, index) => {
-        const activePoints = points.filter((point) => point.y <= topY);
-        if (activePoints.length < 4) return;
-
-        const finalPoint = points.find((point) => point.y > topY);
-        if (finalPoint) {
-          const lastPoint = activePoints[activePoints.length - 1];
-          activePoints.push(lastPoint.clone().lerp(finalPoint, 0.35));
-        }
-
-        const curve = new THREE.CatmullRomCurve3(activePoints);
-        const mesh = new THREE.Mesh(
-          new THREE.TubeGeometry(curve, 130, index === 0 ? 0.062 : 0.052, 12, false),
-          colorVineMaterial
-        );
-        mesh.castShadow = true;
-        coloredVines.add(mesh);
-      });
-    };
-
-    const resize = () => {
-      const rect = mount.getBoundingClientRect();
-      const width = Math.max(rect.width, 320);
-      const height = Math.max(rect.height, 420);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height, false);
-    };
-
-    resize();
-    updateColoredVines(progressRef.current);
-    const observer = new ResizeObserver(resize);
-    observer.observe(mount);
-
-    let frameId = 0;
-    let lastRenderedProgress = progressRef.current;
-    const start = performance.now();
-    const animate = (now) => {
-      const progress = progressRef.current;
-      if (Math.abs(progress - lastRenderedProgress) > 0.002) {
-        updateColoredVines(progress);
-        lastRenderedProgress = progress;
-      }
-
-      const color = new THREE.Color().setHSL(
-        0.31 + progress * 0.08,
-        0.5 + progress * 0.22,
-        0.12 + progress * 0.28
-      );
-      canopyMaterial.color.lerp(color, 0.06);
-      colorVineMaterial.color.setHSL(0.32 + progress * 0.08, 0.7, 0.28 + progress * 0.2);
-      colorVineMaterial.emissiveIntensity = 0.15 + progress * 0.75;
-      glow.material.opacity = 0.06 + progress * 0.28;
-      glow.scale.setScalar(0.85 + progress * 0.45);
-
-      treeGroup.rotation.y = Math.sin((now - start) * 0.00035) * 0.12;
-      canopy.rotation.y += 0.0012;
-      renderer.render(scene, camera);
-      frameId = requestAnimationFrame(animate);
-    };
-    frameId = requestAnimationFrame(animate);
-
     return () => {
-      cancelAnimationFrame(frameId);
       observer.disconnect();
-      mount.removeChild(renderer.domElement);
+      cancelAnimationFrame(rafRef.current);
       scene.traverse(disposeObject);
       renderer.dispose();
+      vineUniformsRef.current = null;
+      if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);
     };
   }, []);
 

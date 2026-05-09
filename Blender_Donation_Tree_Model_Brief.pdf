@@ -1,0 +1,115 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [6 0 R 8 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Length 2664 >>
+stream
+BT /F2 21 Tf 54 760 Td (Donation Tree 3D Model Brief) Tj ET
+BT /F1 10.4 Tf 54 732 Td (Create one donation tree model exported as a single GLB file for Three.js, React, and) Tj ET
+BT /F1 10.4 Tf 54 717.5 Td (Bolt.) Tj ET
+BT /F2 13 Tf 54 689.0 Td (File) Tj ET
+BT /F1 10.4 Tf 54 671.0 Td (- File name: donation-tree.glb) Tj ET
+BT /F1 10.4 Tf 54 656.5 Td (- Website location: public/models/donation-tree.glb) Tj ET
+BT /F2 13 Tf 54 629.0 Td (Scene Setup) Tj ET
+BT /F1 10.4 Tf 54 611.0 Td (- Units: meters) Tj ET
+BT /F1 10.4 Tf 54 596.5 Td (- Tree height: about 5 units tall) Tj ET
+BT /F1 10.4 Tf 54 582.0 Td (- Tree base centered at world origin) Tj ET
+BT /F1 10.4 Tf 54 567.5 Td (- Ground/root base at Y = 0) Tj ET
+BT /F1 10.4 Tf 54 553.0 Td (- Tree grows upward along positive Y) Tj ET
+BT /F1 10.4 Tf 54 538.5 Td (- Forward direction: -Z) Tj ET
+BT /F1 10.4 Tf 54 524.0 Td (- Apply all transforms before export) Tj ET
+BT /F1 10.4 Tf 54 509.5 Td (- Model origin should be at the center of the tree base on the ground.) Tj ET
+BT /F1 10.4 Tf 54 495.0 Td (- Model bounds should fit roughly X -2.5 to 2.5, Y 0 to 5.5, Z -2.5 to 2.5.) Tj ET
+BT /F2 13 Tf 54 467.5 Td (Required Object Names) Tj ET
+BT /F1 10.4 Tf 54 449.5 Td (- TREE_TRUNK) Tj ET
+BT /F1 10.4 Tf 54 435.0 Td (- TREE_ROOTS) Tj ET
+BT /F1 10.4 Tf 54 420.5 Td (- TREE_CANOPY) Tj ET
+BT /F1 10.4 Tf 54 406.0 Td (- PROGRESS_VINE_01) Tj ET
+BT /F1 10.4 Tf 54 391.5 Td (- PROGRESS_VINE_02) Tj ET
+BT /F1 10.4 Tf 54 377.0 Td (- PROGRESS_VINE_03) Tj ET
+BT /F1 10.4 Tf 54 362.5 Td (- Additional donation vines are welcome, but must continue the pattern PROGRESS_VINE_04,) Tj ET
+BT /F1 10.4 Tf 54 348.0 Td (  PROGRESS_VINE_05, etc.) Tj ET
+BT /F1 10.4 Tf 54 332.5 Td (- Every vine that should change color must start with PROGRESS_VINE_.) Tj ET
+BT /F2 13 Tf 54 305.0 Td (Vine Behavior) Tj ET
+BT /F1 10.4 Tf 54 287.0 Td (- The vines should physically wrap upward around the tree from the ground toward the) Tj ET
+BT /F1 10.4 Tf 54 272.5 Td (  canopy.) Tj ET
+BT /F1 10.4 Tf 54 257.0 Td (- $0 of $1000 = vines are black) Tj ET
+BT /F1 10.4 Tf 54 242.5 Td (- $100 of $1000 = bottom 10% of vines becomes colored) Tj ET
+BT /F1 10.4 Tf 54 228.0 Td (- $500 of $1000 = bottom 50% becomes colored) Tj ET
+BT /F1 10.4 Tf 54 213.5 Td (- $1000 of $1000 = all vines become colored) Tj ET
+BT /F1 10.4 Tf 54 199.0 Td (- The vine geometry needs to rise cleanly along the Y axis. The website code reveals color) Tj ET
+BT /F1 10.4 Tf 54 184.5 Td (  from low Y to high Y.) Tj ET
+BT /F1 10.4 Tf 54 169.0 Td (- Do not create baked animations for donation progress. The website code handles the color) Tj ET
+BT /F1 10.4 Tf 54 154.5 Td (  reveal.) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 5 0 R >>
+endobj
+7 0 obj
+<< /Length 2568 >>
+stream
+BT /F2 13 Tf 54 754 Td (Materials) Tj ET
+BT /F1 10.4 Tf 54 736 Td (- MAT_Trunk_Bark) Tj ET
+BT /F1 10.4 Tf 54 721.5 Td (- MAT_Roots_Dark) Tj ET
+BT /F1 10.4 Tf 54 707.0 Td (- MAT_Canopy_DarkLeaves) Tj ET
+BT /F1 10.4 Tf 54 692.5 Td (- MAT_Vine_Black) Tj ET
+BT /F1 10.4 Tf 54 678.0 Td (- The vines can use MAT_Vine_Black in Blender. The website will override progress vine) Tj ET
+BT /F1 10.4 Tf 54 663.5 Td (  material in code.) Tj ET
+BT /F1 10.4 Tf 54 648.0 Td (- Recommended colors: trunk dark brown, roots near black brown, canopy very dark green,) Tj ET
+BT /F1 10.4 Tf 54 633.5 Td (  vines black or near black.) Tj ET
+BT /F2 13 Tf 54 605.0 Td (Geometry Guidelines) Tj ET
+BT /F1 10.4 Tf 54 587.0 Td (- Total triangles: ideally under 80k, max around 120k) Tj ET
+BT /F1 10.4 Tf 54 572.5 Td (- No heavy particle systems unless converted to mesh) Tj ET
+BT /F1 10.4 Tf 54 558.0 Td (- No procedural nodes that require Blender at runtime) Tj ET
+BT /F1 10.4 Tf 54 543.5 Td (- Apply modifiers before export, unless they export reliably to GLB) Tj ET
+BT /F1 10.4 Tf 54 529.0 Td (- Use separate mesh objects for trunk, canopy, roots, and progress vines) Tj ET
+BT /F1 10.4 Tf 54 514.5 Td (- Use actual tube/mesh geometry for vines, not just curves, unless curves are converted to) Tj ET
+BT /F1 10.4 Tf 54 500.0 Td (  mesh before export.) Tj ET
+BT /F1 10.4 Tf 54 484.5 Td (- Each vine should be one continuous upward path if possible.) Tj ET
+BT /F1 10.4 Tf 54 470.0 Td (- Avoid vine parts that go downward for long stretches, because the website reveal is) Tj ET
+BT /F1 10.4 Tf 54 455.5 Td (  height-based.) Tj ET
+BT /F2 13 Tf 54 427.0 Td (Export Settings) Tj ET
+BT /F1 10.4 Tf 54 409.0 Td (- Format: glTF Binary \(.glb\)) Tj ET
+BT /F1 10.4 Tf 54 394.5 Td (- Include: Selected Objects) Tj ET
+BT /F1 10.4 Tf 54 380.0 Td (- Transform: default glTF export is fine) Tj ET
+BT /F1 10.4 Tf 54 365.5 Td (- Apply Modifiers: Yes) Tj ET
+BT /F1 10.4 Tf 54 351.0 Td (- Materials: Export) Tj ET
+BT /F1 10.4 Tf 54 336.5 Td (- Animation: Off, unless there are idle ambient animations separate from donation progress) Tj ET
+BT /F1 10.4 Tf 54 322.0 Td (- Compression: Draco optional, but not required) Tj ET
+BT /F2 13 Tf 54 294.5 Td (Naming Summary) Tj ET
+BT /F1 10.4 Tf 54 276.5 Td (- The website code will look for objects named PROGRESS_VINE_01, PROGRESS_VINE_02,) Tj ET
+BT /F1 10.4 Tf 54 262.0 Td (  PROGRESS_VINE_03, or any object whose name starts with PROGRESS_VINE_.) Tj ET
+BT /F1 10.4 Tf 54 246.5 Td (- Those are the only meshes that should receive the donation-progress color reveal.) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 7 0 R >>
+endobj
+xref
+0 9
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000127 00000 n 
+0000000197 00000 n 
+0000000272 00000 n 
+0000002988 00000 n 
+0000003124 00000 n 
+0000005744 00000 n 
+trailer
+<< /Size 9 /Root 1 0 R >>
+startxref
+5880
+%%EOF

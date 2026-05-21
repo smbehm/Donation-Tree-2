@@ -269,20 +269,36 @@ export function DonationTree3D({ amount, target, campaignName }) {
     const particles = new THREE.Points(particleGeometry, particleMaterial);
     scene.add(particles);
 
-    const resize = () => {
-      const width = mount.clientWidth;
-      const height = mount.clientHeight;
+    const applyViewportSize = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
       if (width < 1 || height < 1) return;
-      camera.aspect = width / height;
+
+      const isMobile = width < 768;
+      const aspect = width / height;
+
+      camera.aspect = aspect;
+      if (isMobile) {
+        camera.position.set(0.1, 2.55, 12.5);
+        camera.lookAt(0.15, 2.85, 0);
+      } else {
+        camera.position.set(0, 2.5, 11);
+        camera.lookAt(0, 2.5, 0);
+      }
       camera.updateProjectionMatrix();
+
       renderer.setSize(width, height, false);
+      renderer.domElement.style.width = '100vw';
+      renderer.domElement.style.height = '100vh';
+      renderer.domElement.style.display = 'block';
     };
 
-    resize();
-    const resizeTarget = mount.parentElement ?? mount;
-    const observer = new ResizeObserver(resize);
-    observer.observe(resizeTarget);
-    if (resizeTarget !== mount) observer.observe(mount);
+    applyViewportSize();
+    const observer = new ResizeObserver(applyViewportSize);
+    observer.observe(document.documentElement);
+    observer.observe(mount);
+    window.addEventListener('resize', applyViewportSize);
+    window.addEventListener('orientationchange', applyViewportSize);
 
     let tick = 0;
     const animate = () => {
@@ -324,6 +340,8 @@ export function DonationTree3D({ amount, target, campaignName }) {
     };
 
     return () => {
+      window.removeEventListener('resize', applyViewportSize);
+      window.removeEventListener('orientationchange', applyViewportSize);
       observer.disconnect();
       cancelAnimationFrame(rafRef.current);
       scene.traverse(disposeObject);

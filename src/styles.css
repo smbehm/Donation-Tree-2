@@ -2,29 +2,31 @@
   color: #dceadc;
   background: #040b06;
   font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     sans-serif;
-}
-
-html {
-  font-size: 80%;
-  height: 100%;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0;
-  min-width: 320px;
+  padding: 0;
+  width: 100%;
   height: 100%;
+  min-width: 320px;
   overflow: hidden;
 }
 
 #root {
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
   min-height: 100dvh;
+  overflow: hidden;
 }
 
 button,
@@ -33,51 +35,83 @@ input {
 }
 
 .page {
-  width: 100%;
-  min-height: 100dvh;
+  position: relative;
+  width: 100vw;
+  height: 100vh;
   height: 100dvh;
-  display: flex;
-  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
   overflow: hidden;
   background: #040b06;
 }
 
 .donation-panel {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  width: 100%;
-  min-height: 0;
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 
+.visual-panel {
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.tree-shell {
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.tree-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.tree-canvas canvas {
+  display: block;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  max-width: none;
+  max-height: none;
+}
+
 .campaign-details {
-  position: relative;
-  flex: 0 0 auto;
-  align-self: flex-start;
+  position: absolute;
+  left: clamp(10px, 2.5vw, 24px);
+  bottom: clamp(10px, 2.5vw, 24px);
   z-index: 3;
-  width: min(196px, calc(100% - 32px));
-  max-width: 196px;
-  margin: 0 0 max(16px, env(safe-area-inset-bottom, 0px))
-    max(16px, env(safe-area-inset-left, 0px));
-  border-radius: 8px;
-  padding: 8px 9px 10px;
+  width: clamp(148px, 38vw, 220px);
+  max-width: calc(100vw - clamp(20px, 5vw, 48px));
+  padding: clamp(6px, 1.6vw, 14px) clamp(7px, 1.8vw, 16px) clamp(7px, 1.8vw, 14px);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  border-radius: clamp(6px, 1.2vw, 10px);
   border: 1px solid rgba(124, 210, 137, 0.18);
   background:
     linear-gradient(180deg, rgba(7, 19, 9, 0.41), rgba(4, 11, 6, 0.46)),
     rgba(4, 11, 6, 0.45);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+  box-shadow: 0 clamp(12px, 4vw, 24px) clamp(40px, 12vw, 80px) rgba(0, 0, 0, 0.34);
   backdrop-filter: blur(16px);
 }
 
 .campaign-details .eyebrow {
-  margin: 0 0 3px;
+  margin: 0 0 clamp(2px, 0.6vw, 6px);
   color: #3dba60;
-  font-size: 0.5rem;
+  font-size: clamp(0.42rem, 2.4vw, 0.68rem);
   font-weight: 700;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -86,53 +120,48 @@ input {
 .campaign-details h1 {
   margin: 0;
   color: #edf8ed;
-  font-size: 0.88rem;
+  font-size: clamp(0.72rem, 3.8vw, 1.35rem);
   line-height: 1.15;
   letter-spacing: 0;
 }
 
 .campaign-copy {
   display: none;
-  max-width: 54ch;
-  margin: 22px 0 30px;
-  color: #4e5d52;
-  font-size: 1rem;
-  line-height: 1.65;
 }
 
 .campaign-details .amount-card {
   display: grid;
-  gap: 6px;
-  margin-top: 6px;
+  gap: clamp(4px, 1.2vw, 8px);
+  margin-top: clamp(4px, 1.2vw, 10px);
   padding: 0;
   border: 0;
-  border-radius: 8px;
+  border-radius: clamp(6px, 1.2vw, 8px);
   background: transparent;
 }
 
 .campaign-details .amount-card label {
   color: #8aaa90;
-  font-size: 0.54rem;
+  font-size: clamp(0.46rem, 2.2vw, 0.62rem);
   font-weight: 750;
   text-transform: uppercase;
 }
 
 .campaign-details .amount-input-row {
   display: grid;
-  grid-template-columns: 14px 1fr;
+  grid-template-columns: clamp(12px, 3.5vw, 18px) 1fr;
   align-items: center;
-  gap: 6px;
-  min-height: 32px;
-  padding: 5px 6px;
+  gap: clamp(4px, 1.2vw, 8px);
+  min-height: clamp(28px, 8vw, 40px);
+  padding: clamp(4px, 1.2vw, 8px) clamp(5px, 1.4vw, 10px);
   border: 1px solid rgba(61, 186, 96, 0.24);
-  border-radius: 8px;
+  border-radius: clamp(6px, 1.2vw, 8px);
   background: rgba(255, 255, 255, 0.023);
 }
 
 .campaign-details .amount-input-row svg {
   color: #3dba60;
-  width: 14px;
-  height: 14px;
+  width: clamp(12px, 3.5vw, 18px);
+  height: clamp(12px, 3.5vw, 18px);
 }
 
 .campaign-details .amount-input-row input {
@@ -142,7 +171,7 @@ input {
   outline: 0;
   color: #f1fff1;
   background: transparent;
-  font-size: 1.05rem;
+  font-size: clamp(0.9rem, 4.5vw, 1.65rem);
   font-weight: 850;
   line-height: 1;
 }
@@ -150,7 +179,7 @@ input {
 .campaign-details .range {
   display: block;
   width: 100%;
-  height: 1.5rem;
+  height: clamp(1.25rem, 5vw, 2rem);
   margin: 0;
   padding: 0;
   cursor: pointer;
@@ -162,13 +191,13 @@ input {
   appearance: none;
 }
 
-.range:focus-visible {
+.campaign-details .range:focus-visible {
   outline: 2px solid rgba(61, 186, 96, 0.55);
   outline-offset: 3px;
 }
 
 .campaign-details .range::-webkit-slider-runnable-track {
-  height: 6px;
+  height: clamp(5px, 1.6vw, 8px);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.16);
 }
@@ -176,9 +205,9 @@ input {
 .campaign-details .range::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 18px;
-  height: 18px;
-  margin-top: -6px;
+  width: clamp(14px, 4.5vw, 20px);
+  height: clamp(14px, 4.5vw, 20px);
+  margin-top: clamp(-5px, -1.6vw, -6px);
   border-radius: 50%;
   background: #3dba60;
   border: 2px solid rgba(4, 11, 6, 0.85);
@@ -186,14 +215,14 @@ input {
 }
 
 .campaign-details .range::-moz-range-track {
-  height: 6px;
+  height: clamp(5px, 1.6vw, 8px);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.16);
 }
 
 .campaign-details .range::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
+  width: clamp(14px, 4.5vw, 20px);
+  height: clamp(14px, 4.5vw, 20px);
   border-radius: 50%;
   background: #3dba60;
   border: 2px solid rgba(4, 11, 6, 0.85);
@@ -203,23 +232,23 @@ input {
 .campaign-details .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 4px;
-  margin-top: 6px;
+  gap: clamp(3px, 1vw, 6px);
+  margin-top: clamp(4px, 1.2vw, 10px);
 }
 
 .campaign-details .stats-grid div {
   min-width: 0;
-  padding: 5px 4px;
+  padding: clamp(4px, 1.2vw, 8px) clamp(3px, 1vw, 6px);
   border: 1px solid rgba(124, 210, 137, 0.12);
-  border-radius: 6px;
+  border-radius: clamp(4px, 1vw, 6px);
   background: rgba(255, 255, 255, 0.023);
 }
 
 .campaign-details .stats-grid svg {
   display: block;
-  width: 11px;
-  height: 11px;
-  margin-bottom: 3px;
+  width: clamp(10px, 3vw, 14px);
+  height: clamp(10px, 3vw, 14px);
+  margin-bottom: clamp(2px, 0.6vw, 4px);
   color: #3dba60;
 }
 
@@ -230,58 +259,30 @@ input {
 
 .campaign-details .stats-grid span {
   color: #75927c;
-  font-size: 0.5rem;
+  font-size: clamp(0.42rem, 2vw, 0.56rem);
   text-transform: uppercase;
+  line-height: 1.2;
 }
 
 .campaign-details .stats-grid strong {
   overflow-wrap: anywhere;
-  margin-top: 2px;
+  margin-top: clamp(1px, 0.4vw, 3px);
   color: #dceadc;
-  font-size: 0.62rem;
-}
-
-.visual-panel {
-  position: relative;
-  flex: 1 1 0;
-  min-height: 0;
-  width: 100%;
-  overflow: hidden;
-  border-radius: 0;
-}
-
-.tree-shell {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  flex: 1 1 auto;
-}
-
-.tree-canvas {
-  position: relative;
-  flex: 1 1 0;
-  width: 100%;
-  min-height: 0;
-}
-
-.tree-canvas canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
+  font-size: clamp(0.52rem, 2.4vw, 0.82rem);
+  line-height: 1.15;
 }
 
 .progress-track {
   position: absolute;
-  right: clamp(14px, 3vw, 28px);
-  top: clamp(14px, 3vw, 28px);
-  bottom: clamp(14px, 3vw, 28px);
-  width: 10px;
+  right: clamp(10px, 2.5vw, 28px);
+  top: clamp(10px, 2.5vw, 28px);
+  bottom: clamp(10px, 2.5vw, 28px);
+  width: clamp(6px, 1.6vw, 10px);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
   overflow: hidden;
   z-index: 2;
+  pointer-events: none;
 }
 
 .progress-track span {
@@ -294,85 +295,10 @@ input {
   transition: height 180ms ease;
 }
 
-@media (min-width: 768px) {
-  .donation-panel {
-    display: block;
-    flex: 1 1 auto;
-    min-height: 0;
-  }
-
-  .visual-panel {
-    position: absolute;
-    inset: 0;
-    flex: none;
-    height: auto;
-  }
-
-  .tree-shell,
-  .tree-canvas {
-    height: 100%;
-    min-height: 0;
-  }
-
-  .campaign-details {
-    position: absolute;
-    left: max(16px, env(safe-area-inset-left, 0px));
-    bottom: max(16px, env(safe-area-inset-bottom, 0px));
-    margin: 0;
-    width: min(196px, calc(100% - 32px));
-    max-width: 196px;
-  }
-}
-
 @media (max-width: 767px) {
-  .donation-panel {
-    overflow-y: auto;
-    overscroll-behavior: contain;
-  }
-
   .campaign-details {
-    width: min(196px, calc(100% - 32px));
-    flex-shrink: 0;
-  }
-
-  .campaign-details h1 {
-    font-size: 0.84rem;
-  }
-
-  .campaign-details .amount-card {
-    margin-top: 6px;
-    gap: 6px;
-  }
-
-  .campaign-details .amount-input-row {
-    min-height: 30px;
-    padding: 5px 6px;
-  }
-
-  .campaign-details .amount-input-row input {
-    font-size: 1rem;
-  }
-
-  .campaign-details .stats-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 4px;
-    margin-top: 6px;
-  }
-
-  .campaign-details .stats-grid div {
-    display: block;
-    padding: 5px 4px;
-  }
-
-  .campaign-details .stats-grid svg {
-    margin-bottom: 3px;
-    width: 11px;
-    height: 11px;
-  }
-
-  .campaign-details .stats-grid strong {
-    margin-top: 2px;
-    font-size: 0.6rem;
+    width: clamp(132px, 42vw, 168px);
+    padding: clamp(5px, 1.4vw, 8px) clamp(6px, 1.6vw, 9px) clamp(6px, 1.6vw, 8px);
   }
 
   .progress-track {
@@ -380,8 +306,8 @@ input {
     top: max(10px, env(safe-area-inset-top, 0px));
     bottom: auto;
     left: auto;
-    width: clamp(72px, 34vw, 132px);
-    height: 8px;
+    width: clamp(64px, 32vw, 120px);
+    height: clamp(6px, 1.6vw, 8px);
   }
 
   .progress-track span {

@@ -80,26 +80,26 @@ export function DonationTree3D({ amount, target, campaignName }) {
     mount.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x040b06);
-    scene.fog = new THREE.FogExp2(0x040b06, 0.065);
+    scene.background = new THREE.Color(0x122a18);
+    scene.fog = new THREE.FogExp2(0x122a18, 0.038);
 
     const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 100);
-    camera.position.set(0, 2.8, 6.8);
+    camera.position.set(0, 2.5, 11);
     camera.lookAt(0, 2.5, 0);
 
-    scene.add(new THREE.AmbientLight(0x0c1e0c, 0.9));
+    scene.add(new THREE.AmbientLight(0x2a5a32, 3.2));
 
-    const sun = new THREE.DirectionalLight(0xffe8a0, 1.7);
+    const sun = new THREE.DirectionalLight(0xffe8a0, 4.8);
     sun.position.set(4, 8, 5);
     sun.castShadow = true;
     sun.shadow.mapSize.set(1024, 1024);
     scene.add(sun);
 
-    const fillLight = new THREE.PointLight(0x44ff88, 1, 24);
+    const fillLight = new THREE.PointLight(0x66ffaa, 3.2, 24);
     fillLight.position.set(-3, 4, 3);
     scene.add(fillLight);
 
-    const rimLight = new THREE.PointLight(0x001a44, 0.45, 18);
+    const rimLight = new THREE.PointLight(0x3a6a50, 2.2, 18);
     rimLight.position.set(2, 2, -4);
     scene.add(rimLight);
 
@@ -270,16 +270,19 @@ export function DonationTree3D({ amount, target, campaignName }) {
     scene.add(particles);
 
     const resize = () => {
-      const width = Math.max(mount.clientWidth, 320);
-      const height = Math.max(mount.clientHeight, 420);
+      const width = mount.clientWidth;
+      const height = mount.clientHeight;
+      if (width < 1 || height < 1) return;
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
     };
 
     resize();
+    const resizeTarget = mount.parentElement ?? mount;
     const observer = new ResizeObserver(resize);
-    observer.observe(mount);
+    observer.observe(resizeTarget);
+    if (resizeTarget !== mount) observer.observe(mount);
 
     let tick = 0;
     const animate = () => {
@@ -302,7 +305,7 @@ export function DonationTree3D({ amount, target, campaignName }) {
       }
       particlePosition.needsUpdate = true;
 
-      fillLight.intensity = 1 + Math.sin(tick * 1.4) * 0.13;
+      fillLight.intensity = 3.2 + Math.sin(tick * 1.4) * 0.13;
       particleMaterial.opacity = 0.5 + Math.sin(tick * 1.8) * 0.18;
 
       renderer.render(scene, camera);
